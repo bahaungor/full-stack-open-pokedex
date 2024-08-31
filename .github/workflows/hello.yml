@@ -1,20 +1,20 @@
-name: Hello World!
+name: Hello World! # Name of the worflow
 
-on:
+on: # Trigger of the workflow
   push:
     branches:
       - main
 
-jobs:
-  hello_world_job:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Say hello
-        run: |
+jobs: # Run all jobs here on trigger
+  hello_world_job: # Name of the first job
+    runs-on: ubuntu-20.04 # Name of the first job
+    steps: # Define steps for this job
+      - name: Say hello # Define new step
+        run: | # Task to do in step above
           echo "Hello World!"
-      - name: Now it is
-        run: |
+      - name: Now it is # Define new step
+        run: | # Task to do in step above
           date
-      - name: Directory content
-        run: |
+      - name: Directory content # Define new step
+        run: | # Task to do in step above
           ls -l

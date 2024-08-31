@@ -1,0 +1,27 @@
+name: Deployment pipeline # Name of the workflow
+
+on: # Trigger of the workflow
+ push:
+   branches:
+     - main
+ pull_request:
+   branches: [main]
+   types: [opened, synchronize]
+
+jobs: # Start listing jobs
+ simple_deployment_pipeline: # Job #1
+   runs-on: ubuntu-20.04 # Define environment for job
+   steps:
+     - uses: actions/checkout@v4 # Run specific action in this step
+     - uses: actions/setup-node@v4 # Run specific action in this step
+       with: # Provide parameters to the action
+         node-version: '20'
+     - name: Install dependencies # Define new step
+       run: npm install # Task to do in step above
+     - name: Check style # Define new step
+       run: npm run eslint # Task to do in step above
+     - name: Deploy # Define the deployment step
+       # if: ${{ github.event_name == 'push' }} # Run only if the event is a push
+       run: | # Task to do in step above
+          echo "Deploying to production"
+        # Your deployment script or command here
