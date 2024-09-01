@@ -41,6 +41,7 @@ jobs: # Start listing jobs
     # if: github.event.pull_request.merged == true
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v4
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.64.0
         env:
