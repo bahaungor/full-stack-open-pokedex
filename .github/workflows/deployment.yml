@@ -1,29 +1,47 @@
 name: Deployment pipeline # Name of the workflow
 
 on: # Trigger of the workflow
- push:
-   branches:
-     - main
- pull_request:
-   branches: [main]
-   types: [opened, synchronize]
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
 
 jobs: # Start listing jobs
- simple_deployment_pipeline: # Job #1
-   runs-on: ubuntu-20.04 # Define environment for job
-   steps:
-     - uses: actions/checkout@v4 # Run specific action in this step
-     - uses: actions/setup-node@v4 # Run specific action in this step
-       with: # Provide parameters to the action
-         node-version: '20'
-     - name: Install dependencies # Define new step
-       run: npm install # Task to do in step above
-     - name: Check style # Define new step
-       if: ${{ github.event_name == 'push' }} # Run only if the event is a push
-       run: npm run eslint # Task to do in step above
-     - name: Deploy # Define the deployment step
-       if: ${{ github.event_name == 'push' }} # Run only if the event is a push
-       run: | # Task to do in step above
-          echo "Deploying to production"
+  ci_pipeline: # Job #1
+    runs-on: ubuntu-20.04 # Define environment for job
+    steps:
+      - uses: actions/checkout@v4 # Run specific action in this step
+
+      - uses: actions/setup-node@v4 # Run specific action in this step
+        with: # Provide parameters to the action
+          node-version: '20'
+
+      - name: Install dependencies # Define new step
+        run: npm install # Task to do in step above
+
+  cd_pipeline:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check style # Define new step
+        # if: ${{ github.event_name == 'push' }} # Run only pull request is merged
+        run: | # npm run eslint # Task to do in step above
+          echo "Linting the project..."
+
+      - name: Deploy # Define the deployment step
+        run: | # Task to do in step above
+          echo "Deploying to production..."
         # Your deployment script or command here
         # This is a new feature
+
+  tag_release:
+    needs: [ci_pipeline, cd_pipeline]
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.64.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
