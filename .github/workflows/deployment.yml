@@ -22,7 +22,7 @@ jobs: # Start listing jobs
         run: npm install # Task to do in step above
 
   cd_pipeline:
-    if: github.event.pull_request.merged == true
+    if: ${{ github.event_name == 'push' }} # Run only pull request is merged
     runs-on: ubuntu-22.04
     steps:
       - name: Check style # Define new step
@@ -38,7 +38,7 @@ jobs: # Start listing jobs
 
   tag_release:
     needs: [ci_pipeline, cd_pipeline]
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-22.04
     steps:
       - name: Bump version and push tag
